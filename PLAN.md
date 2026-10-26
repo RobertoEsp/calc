@@ -1,6 +1,7 @@
 # MVP Calc — Implementation Plan
 
-Status: **planned, not started**
+Status: **in progress** — Phase 0 (skeleton) and Phase 1 (backend, basic operations) complete as of
+2026-10-25.
 
 Source requirements: `requirements.md`
 
@@ -17,6 +18,7 @@ Source requirements: `requirements.md`
 | Percentage | Contextual: `200 + 10% = 220` (full rules below) |
 | Frontend | React + TypeScript (Vite), hybrid keypad + editable expression line |
 | Backend | Go, standard library only (`net/http`), no web framework |
+| Go toolchain | Docker `golang:1.27-alpine` via colima; no local Go install |
 | Docker | Single multi-stage image; Go binary serves the built SPA and `/api` on one port |
 | Tests | Go table-driven + `httptest`; Vitest + React Testing Library + MSW |
 | Persistence | None (no DB, no auth, no calculation history) |
@@ -71,9 +73,9 @@ A flat request is simply a tree of depth one:
 
 - `path` identifies the failing sub-node (`operands[1].operands[0]`).
 - Status codes: `400` malformed JSON / invalid schema, `422` domain error, `500` unexpected.
-- Error codes: `invalid_json`, `invalid_operation`, `invalid_operand_count`, `division_by_zero`,
-  `negative_sqrt`, `non_finite_result`, `invalid_percent_usage`, `expression_too_deep`,
-  `expression_too_large`.
+- Error codes: `invalid_json`, `request_too_large`, `invalid_expression`, `invalid_operation`,
+  `invalid_operand`, `invalid_operand_count`, `division_by_zero`, `negative_sqrt`,
+  `non_finite_result`, `invalid_percent_usage`, `expression_too_deep`, `expression_too_large`.
 
 ### Percentage semantics
 
@@ -144,7 +146,7 @@ calc/
 
 ## 4. Phases
 
-### Phase 0 — Skeleton
+### Phase 0 — Skeleton ✅
 
 1. `git init` (folder is not currently a repo).
 2. Create directory layout, `go.mod`, Vite React-TS scaffold, `.gitignore`.
@@ -152,7 +154,7 @@ calc/
 
 Done when: both toolchains build empty projects and `requirements.md` is tracked.
 
-### Phase 1 — Backend, basic operations
+### Phase 1 — Backend, basic operations ✅
 
 Backend-first, recursive from the start.
 
@@ -179,7 +181,7 @@ Done when: `go test ./... -cover` is green and `curl` examples behave as documen
 
 ### Phase 2 — Frontend, basic operations
 
-1. Vite + TypeScript strict, ESLint/Prettier, dev proxy `/api` → `http://localhost:8080`.
+1. Vite + TypeScript strict, oxlint (Vite scaffold default), dev proxy `/api` → `http://localhost:8080`.
 2. `api/client.ts`: typed request/response, timeout, `AbortController` support, API error-code → user message mapping.
 3. `expr/`: tokenizer + recursive-descent parser producing an AST; `serialize.ts` converts the AST into the nested request shape. Precedence: `× ÷` over `+ −`; parentheses; unary minus.
 4. `hooks/useCalculator.ts`: input editing, keyboard handling, evaluation lifecycle, in-flight cancellation when a new calculation starts, error state.

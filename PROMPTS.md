@@ -38,3 +38,21 @@ Clarification answer given:
 ## 4. Prompt history file
 
 > create a new file to create a historical of the promnts I'm giving
+
+## 5. First commit
+
+> prepare a first commit with our changes, do not push it yet
+
+## 6. Start Phase 0
+
+> start with phase 0
+
+## 7. Go toolchain
+
+Clarification answer given:
+
+> Can we use docker?
+
+## 8. Start Phase 1
+
+> Start with phase 1
