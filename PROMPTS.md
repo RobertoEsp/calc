@@ -99,3 +99,17 @@ Implementation notes:
   design rationale, and coverage results; replaced the Vite boilerplate frontend README.
 - Added `make docker-run` and verified the image on port 8081, including static fallback, asset
   caching, API calls, and the non-root user.
+
+## 12. Start Phase 5
+
+> Start with phase 5
+
+Implementation notes:
+
+- Re-ran coverage for both layers and lint; recorded final results in the README.
+- Rebuilt the Docker image and ran a fresh container with a healthy healthcheck and UID 10001.
+- Curl-checked all client-reachable API error codes and every operation.
+- Ran a keyboard-only browser flow (Tab, typing, Enter, Escape, Tab + Space) at desktop and mobile
+  widths, with no horizontal overflow.
+- Documented that `invalid_expression` and `invalid_operand` are evaluator guards rather than
+  decoder-reachable API errors.

@@ -1,7 +1,7 @@
 # MVP Calc — Implementation Plan
 
-Status: **in progress** — Phases 0–4 (skeleton, backend, frontend, optional operations, packaging and
-documentation) complete as of 2026-10-26. Phase 5 (final verification) remains.
+Status: **complete** — Phases 0–5 (skeleton, backend, frontend, optional operations, packaging and
+documentation, final verification) complete as of 2026-10-27.
 
 Source requirements: `requirements.md`
 
@@ -254,6 +254,25 @@ Docker, API examples, percentage rules, error codes, limits, and design decision
 2. `docker build` and `docker run`; smoke test `/healthz` and `/api/v1/calculate`.
 3. Curl checks for every error code.
 4. Browser check at desktop and mobile widths, plus keyboard-only flow.
+
+Done when: both suites are green, the image builds, all client-reachable error codes are verified,
+and the browser checks pass. ✅
+
+Final verification (2026-10-27):
+
+- `make cover`: frontend **82 tests**, **96.4% statements / 97.6% lines / 100% functions**; Go
+  **93.5%** API, **98.7%** calculator, **92.9%** web, **86.1%** total. `make lint` is clean.
+- `docker build` succeeded and a fresh container ran on `:8082` with a healthy healthcheck and UID
+  10001. `/healthz`, `/`, history fallback, hashed assets, and all operations behaved as expected.
+- Curl checks returned the expected status and code for `invalid_json` (400), `request_too_large`
+  (413), `invalid_operation`, `invalid_operand_count`, `division_by_zero`, `negative_sqrt`,
+  `non_finite_result`, `invalid_percent_usage`, `expression_too_deep`, and `expression_too_large`
+  (422). `invalid_expression` and `invalid_operand` are evaluator guards covered by domain tests;
+  `internal_error` is a safety net for unexpected failures.
+- Keyboard-only browser flow passed: Tab focused the input, typing plus Enter evaluated, Escape
+  cleared, and Tab + Space activated the Clear key. Verified `2+3*4 = 14`, `2^10 = 1024`,
+  `√81 = 9`, and `200+10% = 220`.
+- Layout checked at 1280px and 390px with no horizontal overflow; mobile key height stayed at 52px.
 
 ---
 

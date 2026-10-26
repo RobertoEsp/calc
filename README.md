@@ -89,7 +89,7 @@ make lint          # go vet + oxlint
 make build-api     # compile the server into backend/bin/
 ```
 
-Current results (2026-10-26):
+Current results (2026-10-27):
 
 - Frontend: **82 tests** across 6 files; **96.4% statements**, **97.6% lines**, **100% functions**.
 - Backend: **93.5%** coverage in `internal/api`, **98.7%** in `internal/calculator`, **92.9%** in
@@ -97,6 +97,10 @@ Current results (2026-10-26):
 - `go vet`, `gofmt`, oxlint, and the production build are clean.
 
 `make cover` writes `backend/coverage.out` and an HTML report under `frontend/coverage/`.
+
+Release verification on 2026-10-27 built and ran the container, curl-checked every client-reachable
+error code and all operations, and exercised a keyboard-only browser flow at 1280px and 390px. The
+container ran as UID 10001 with a healthy Docker healthcheck.
 
 ## API
 
@@ -207,9 +211,9 @@ return `422 invalid_percent_usage`.
 |---|---|---|
 | `invalid_json` | 400 | Malformed JSON, unknown field, or invalid request schema |
 | `request_too_large` | 413 | Body exceeds 1 MiB |
-| `invalid_expression` | 422 | Missing expression |
+| `invalid_expression` | 422 | Missing expression (evaluator guard) |
 | `invalid_operation` | 422 | Unknown operation name |
-| `invalid_operand` | 422 | Operand is empty, ambiguous, or the wrong shape |
+| `invalid_operand` | 422 | Empty or ambiguous operand (evaluator guard) |
 | `invalid_operand_count` | 422 | Wrong number of operands for the operation |
 | `division_by_zero` | 422 | Divisor is zero, including a zero percentage divisor |
 | `negative_sqrt` | 422 | Square root of a negative number |
@@ -218,6 +222,10 @@ return `422 invalid_percent_usage`.
 | `expression_too_deep` | 422 | More than 16 nested levels |
 | `expression_too_large` | 422 | More than 64 nodes |
 | `internal_error` | 500 | Unexpected server failure |
+
+`invalid_expression` and `invalid_operand` are evaluator guards covered by domain tests; the HTTP
+decoder rejects malformed operands earlier as `invalid_json`. `internal_error` is a safety net for
+unexpected server failures.
 
 ### Limits
 
