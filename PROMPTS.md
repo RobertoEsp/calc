@@ -84,3 +84,18 @@ Implementation notes:
 - Error messages cover `negative_sqrt` and the updated percent rule.
 - Verified `2^10`, `√81`, `200+10%`, `25%`, and the negative-square-root error against the live
   backend through the Vite proxy at desktop and mobile widths.
+
+## 11. Start Phase 4
+
+> Start with phase 4
+
+Implementation notes:
+
+- Added `internal/web`: SPA file serving, history fallback for client routes, immutable caching for
+  hashed assets, and a router that keeps `/api` and `/healthz` on the Go handler.
+- Added a three-stage `Dockerfile` (Node build, Go static build, Alpine runtime as UID 10001) plus
+  `.dockerignore`; `STATIC_DIR` makes the binary serve the built SPA.
+- Added the root `README.md` with setup, Docker, API examples, percentage rules, error codes, limits,
+  design rationale, and coverage results; replaced the Vite boilerplate frontend README.
+- Added `make docker-run` and verified the image on port 8081, including static fallback, asset
+  caching, API calls, and the non-root user.

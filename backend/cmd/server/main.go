@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"calc/backend/internal/api"
+	"calc/backend/internal/web"
 )
 
 func main() {
@@ -22,9 +23,19 @@ func main() {
 		port = "8080"
 	}
 
+	handler := api.NewHandler(logger)
+	if staticDir := os.Getenv("STATIC_DIR"); staticDir != "" {
+		static, err := web.NewHandler(staticDir)
+		if err != nil {
+			logger.Error("static files unavailable", "dir", staticDir, "error", err)
+			os.Exit(1)
+		}
+		handler = web.NewRouter(handler, static)
+	}
+
 	server := &http.Server{
 		Addr:              ":" + port,
-		Handler:           api.NewHandler(logger),
+		Handler:           handler,
 		ReadHeaderTimeout: 5 * time.Second,
 		ReadTimeout:       10 * time.Second,
 		WriteTimeout:      10 * time.Second,

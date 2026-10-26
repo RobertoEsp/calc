@@ -1,7 +1,7 @@
 # MVP Calc — Implementation Plan
 
-Status: **in progress** — Phase 0 (skeleton), Phase 1 (backend, basic operations), Phase 2
-(frontend, basic operations), and Phase 3 (optional operations) complete as of 2026-10-26.
+Status: **in progress** — Phases 0–4 (skeleton, backend, frontend, optional operations, packaging and
+documentation) complete as of 2026-10-26. Phase 5 (final verification) remains.
 
 Source requirements: `requirements.md`
 
@@ -119,7 +119,7 @@ calc/
 │   │   ├── decode.go            # custom UnmarshalJSON for operand union
 │   │   ├── middleware.go        # logging, recovery, dev CORS
 │   │   └── *_test.go
-│   ├── internal/web/static.go   # SPA serving + history fallback
+│   ├── internal/web/static.go   # SPA serving, history fallback, router
 │   └── go.mod
 ├── frontend/
 │   ├── src/api/
@@ -142,6 +142,7 @@ calc/
 │   ├── src/index.css
 │   └── src/**/*.test.{ts,tsx}
 ├── Dockerfile
+├── .dockerignore
 ├── Makefile
 ├── .gitignore
 └── README.md
@@ -236,7 +237,16 @@ keypad entry of powers and percentages, and a 390px layout with no overflow.
    - Design decisions: single endpoint, nested operands, percentage rules, `float64` + rounding, SPA served by Go.
    - Assumptions and known limitations.
    - Coverage commands and current results.
-3. `Makefile`: `dev-api`, `dev-web`, `test`, `cover`, `docker`, `lint`.
+3. `Makefile`: `dev-api`, `dev-web`, `test`, `cover`, `docker`, `docker-run`, `lint`.
+
+Done when: the image builds and serves the SPA and API from one port. ✅
+`internal/web` now serves the built SPA with history fallback, immutable caching for hashed assets,
+and a router that keeps `/api` and `/healthz` on the Go handler. The Docker image builds from
+Node 24 + Go 1.27 stages into an Alpine runtime running as UID 10001. Verified the image on port
+8081: `/healthz`, `/`, a client-side route fallback, hashed asset caching, `add`, `exponentiate`,
+contextual percentage, and `negative_sqrt` all behave as expected; missing assets return 404.
+Go coverage is 93.5% API, 98.7% calculator, 92.9% web (86.1% total). `README.md` documents setup,
+Docker, API examples, percentage rules, error codes, limits, and design decisions.
 
 ### Phase 5 — Verification
 

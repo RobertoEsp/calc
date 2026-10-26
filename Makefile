@@ -6,7 +6,7 @@ GO_DOCKER := docker run --rm \
 	-v mvp-calc-go-build:/root/.cache/go-build \
 	$(GO_IMAGE)
 
-.PHONY: dev-api dev-web test test-api test-web cover lint build-api docker
+.PHONY: dev-api dev-web test test-api test-web cover lint build-api docker docker-run
 
 dev-api:
 	docker run --rm -p 8080:8080 -e PORT=8080 \
@@ -40,3 +40,6 @@ build-api:
 
 docker:
 	docker build -t mvp-calc:dev .
+
+docker-run: docker
+	docker run --rm -p 8080:8080 mvp-calc:dev
