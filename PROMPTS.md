@@ -56,3 +56,15 @@ Clarification answer given:
 ## 8. Start Phase 1
 
 > Start with phase 1
+
+## 9. Start Phase 2
+
+> Start with phase 2
+
+Implementation notes:
+
+- Frontend stack: React 19 + TypeScript strict, Vite 8, oxlint, Vitest 5 + React Testing Library +
+  MSW 3.
+- Local expression parser produces an AST, then a single nested request per evaluation.
+- Visual direction: pine/bone/phosphor palette, monospace numbers, full-width ember equals bar.
+- Verified against the live Go API through the Vite proxy at desktop and mobile widths.

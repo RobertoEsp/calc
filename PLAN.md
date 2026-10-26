@@ -1,7 +1,7 @@
 # MVP Calc — Implementation Plan
 
-Status: **in progress** — Phase 0 (skeleton) and Phase 1 (backend, basic operations) complete as of
-2026-10-25.
+Status: **in progress** — Phase 0 (skeleton), Phase 1 (backend, basic operations), and Phase 2
+(frontend, basic operations) complete as of 2026-10-26.
 
 Source requirements: `requirements.md`
 
@@ -29,7 +29,7 @@ Source requirements: `requirements.md`
 - Tests compare floats with an epsilon tolerance.
 - `percent` applies only where explicitly permitted (see table); all other uses are rejected.
 - Input accepts decimal and scientific notation; empty/whitespace is invalid.
-- No i18n, no themes beyond light/dark-free plain styling.
+- No i18n and no theme switcher; a single custom visual theme.
 
 ---
 
@@ -122,19 +122,24 @@ calc/
 │   ├── internal/web/static.go   # SPA serving + history fallback
 │   └── go.mod
 ├── frontend/
-│   ├── src/api/client.ts        # typed client, timeout, abort, error mapping
+│   ├── src/api/
+│   │   ├── client.ts            # typed client, timeout, abort, error mapping
+│   │   └── client.test.ts
 │   ├── src/expr/
 │   │   ├── tokenizer.ts
 │   │   ├── parser.ts            # expression → AST
 │   │   ├── serialize.ts         # AST → nested request payload
+│   │   ├── format.ts            # 12-significant-digit display rounding
+│   │   ├── errors.ts
 │   │   └── *.test.ts
 │   ├── src/components/
-│   │   ├── Calculator.tsx
+│   │   ├── Calculator.tsx       # caret insertion, keyboard shortcuts
 │   │   ├── Display.tsx
-│   │   ├── ExpressionInput.tsx
 │   │   └── Keypad.tsx
 │   ├── src/hooks/useCalculator.ts
-│   ├── src/styles/*
+│   ├── src/test/                # MSW server and Vitest setup
+│   ├── src/App.test.tsx
+│   ├── src/index.css
 │   └── src/**/*.test.{ts,tsx}
 ├── Dockerfile
 ├── Makefile
@@ -179,7 +184,7 @@ Backend-first, recursive from the start.
 
 Done when: `go test ./... -cover` is green and `curl` examples behave as documented.
 
-### Phase 2 — Frontend, basic operations
+### Phase 2 — Frontend, basic operations ✅
 
 1. Vite + TypeScript strict, oxlint (Vite scaffold default), dev proxy `/api` → `http://localhost:8080`.
 2. `api/client.ts`: typed request/response, timeout, `AbortController` support, API error-code → user message mapping.
@@ -193,7 +198,10 @@ Done when: `go test ./... -cover` is green and `curl` examples behave as documen
    - MSW handlers for success and each error code.
 7. Dev commands in `Makefile`: `dev-api`, `dev-web`.
 
-Done when: `npm test` and `npm run build` pass, and the app works against the live backend.
+Done when: `npm test` and `npm run build` pass, and the app works against the live backend. ✅
+61 tests pass across 6 files; lint and production build are clean; frontend coverage is 96.9%
+statements / 98.2% lines. A headless-Chrome smoke test through the Vite proxy verified `2+3*4 = 14`,
+keypad entry `7×8 = 56`, the `1/0` error message, and 390px/1280px layouts with no overflow.
 
 ### Phase 3 — Optional operations, end to end
 
@@ -240,5 +248,6 @@ Done when: both suites are green and every operation is exercisable from the UI.
 - **Contextual `%` in `divide`** (`a ÷ b%`) is the least intuitive rule. Document it explicitly and cover it with tests rather than leaving it implicit.
 - **Error paths** must remain accurate as nesting grows; build them during recursion instead of post-processing.
 - **Local vs server validation** is deliberately split: syntax locally, arithmetic and domain rules on the server.
-- **No git repo exists yet**, so Phase 0 initializes one.
+- **Vite dev-server cache:** changing `vite.config.ts` can leave stale optimized dependencies (the
+  page then fails with `504 Outdated Optimize Dep`). Restart the dev server after config changes.
 - **Stateless backend** keeps Docker and scaling simple; no session state is introduced.

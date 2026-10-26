@@ -24,9 +24,8 @@ test: test-api test-web
 test-api:
 	$(GO_DOCKER) go test ./...
 
-# Wired once Vitest lands in Phase 2.
 test-web:
-	cd frontend && npm test -- --run
+	cd frontend && npm test
 
 cover:
 	$(GO_DOCKER) go test ./... -coverprofile=coverage.out
