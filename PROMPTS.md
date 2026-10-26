@@ -68,3 +68,19 @@ Implementation notes:
 - Local expression parser produces an AST, then a single nested request per evaluation.
 - Visual direction: pine/bone/phosphor palette, monospace numbers, full-width ember equals bar.
 - Verified against the live Go API through the Vite proxy at desktop and mobile widths.
+
+## 10. Start Phase 3
+
+> Start with phase 3
+
+Implementation notes:
+
+- Backend adds `exponentiate`, `sqrt`, and `percent`; nested operands keep one request per evaluation.
+- Percentages are contextual only on the right of `+ − × ÷`; `^` and `sqrt` reject them with
+  `invalid_percent_usage`, and standalone percentages use the unary `percent` operation.
+- Frontend grammar adds right-associative `^`, prefix `√`, and postfix `%`; the keypad gains a
+  `√ xʸ % ÷` row, the operator column keeps `÷ × − +` aligned, and `=` moves into the bottom row so
+  the 4-column grid stays full.
+- Error messages cover `negative_sqrt` and the updated percent rule.
+- Verified `2^10`, `√81`, `200+10%`, `25%`, and the negative-square-root error against the live
+  backend through the Vite proxy at desktop and mobile widths.

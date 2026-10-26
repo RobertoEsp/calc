@@ -14,11 +14,12 @@ export class CalculatorApiError extends Error {
 
 const MESSAGES: Record<string, string> = {
   division_by_zero: 'Cannot divide by zero.',
+  negative_sqrt: 'Cannot take the square root of a negative number.',
   non_finite_result: 'That result is too large to show.',
   invalid_operation: 'That operation is not supported.',
   invalid_operand: 'That expression is not valid.',
   invalid_operand_count: 'That expression is not valid.',
-  invalid_percent_usage: 'Percentages are not available yet.',
+  invalid_percent_usage: 'Percentages can only be used on the right side of an operation.',
   expression_too_deep: 'That expression is nested too deeply.',
   expression_too_large: 'That expression is too long.',
   invalid_json: 'The expression could not be read.',

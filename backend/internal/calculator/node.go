@@ -10,10 +10,13 @@ const (
 type Operation string
 
 const (
-	Add      Operation = "add"
-	Subtract Operation = "subtract"
-	Multiply Operation = "multiply"
-	Divide   Operation = "divide"
+	Add          Operation = "add"
+	Subtract     Operation = "subtract"
+	Multiply     Operation = "multiply"
+	Divide       Operation = "divide"
+	Exponentiate Operation = "exponentiate"
+	Sqrt         Operation = "sqrt"
+	Percent      Operation = "percent"
 )
 
 // Value is a literal number, optionally expressed as a percentage.
@@ -39,8 +42,8 @@ func Number(n float64) Operand {
 	return Operand{Value: &Value{Number: n}}
 }
 
-// Percent returns a literal operand marked as a percentage.
-func Percent(n float64) Operand {
+// PercentValue returns a literal operand marked as a percentage.
+func PercentValue(n float64) Operand {
 	return Operand{Value: &Value{Number: n, Percent: true}}
 }
 

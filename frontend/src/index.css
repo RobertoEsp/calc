@@ -199,9 +199,6 @@ body {
 }
 
 .key--equals {
-  grid-column: span 4;
-  min-height: 50px;
-  margin-top: 2px;
   border-color: var(--ember-dark);
   background: var(--ember);
   box-shadow: 0 2px 0 var(--ember-dark);

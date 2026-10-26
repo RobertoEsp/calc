@@ -70,6 +70,103 @@ describe('Calculator', () => {
     expect(calls).toBe(1)
   })
 
+  it('evaluates exponentiation from the keypad', async () => {
+    let body: unknown
+    mockResult(1024, (received) => {
+      body = received
+    })
+
+    const { user, input, result } = renderCalculator()
+    for (const name of ['2', 'Exponentiation', '1', '0']) {
+      await user.click(screen.getByRole('button', { name }))
+    }
+    await user.click(screen.getByRole('button', { name: 'Equals' }))
+
+    expect(input).toHaveValue('2^10')
+    await waitFor(() => expect(result).toHaveTextContent('1024'))
+    expect(body).toEqual({ operation: 'exponentiate', operands: [2, 10] })
+  })
+
+  it('evaluates a square root from the keypad', async () => {
+    let body: unknown
+    mockResult(9, (received) => {
+      body = received
+    })
+
+    const { user, input, result } = renderCalculator()
+    for (const name of ['Square root', '8', '1']) {
+      await user.click(screen.getByRole('button', { name }))
+    }
+    await user.click(screen.getByRole('button', { name: 'Equals' }))
+
+    expect(input).toHaveValue('√81')
+    await waitFor(() => expect(result).toHaveTextContent('9'))
+    expect(body).toEqual({ operation: 'sqrt', operands: [81] })
+  })
+
+  it('sends a contextual percentage from the keypad', async () => {
+    let body: unknown
+    mockResult(220, (received) => {
+      body = received
+    })
+
+    const { user, input, result } = renderCalculator()
+    for (const name of ['2', '0', '0', 'Add', '1', '0', 'Percent']) {
+      await user.click(screen.getByRole('button', { name }))
+    }
+    await user.click(screen.getByRole('button', { name: 'Equals' }))
+
+    expect(input).toHaveValue('200+10%')
+    await waitFor(() => expect(result).toHaveTextContent('220'))
+    expect(body).toEqual({
+      operation: 'add',
+      operands: [200, { value: 10, percent: true }],
+    })
+  })
+
+  it('evaluates a standalone percentage', async () => {
+    let body: unknown
+    mockResult(0.25, (received) => {
+      body = received
+    })
+
+    const { user, input, result } = renderCalculator()
+    for (const name of ['2', '5', 'Percent']) {
+      await user.click(screen.getByRole('button', { name }))
+    }
+    await user.click(screen.getByRole('button', { name: 'Equals' }))
+
+    expect(input).toHaveValue('25%')
+    await waitFor(() => expect(result).toHaveTextContent('0.25'))
+    expect(body).toEqual({ operation: 'percent', operands: [25] })
+  })
+
+  it('shows a negative square root error from the API', async () => {
+    mockError('negative_sqrt', 'cannot take the square root of a negative number')
+
+    const { user, input, result } = renderCalculator()
+    for (const name of ['Square root', 'Subtract', '4']) {
+      await user.click(screen.getByRole('button', { name }))
+    }
+    await user.click(screen.getByRole('button', { name: 'Equals' }))
+
+    expect(input).toHaveValue('√-4')
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Cannot take the square root of a negative number.',
+    )
+    expect(result.textContent).toBe('')
+    expect(input).toHaveAttribute('aria-invalid', 'true')
+  })
+
+  it('inserts advanced operations from the keypad', async () => {
+    const { user, input } = renderCalculator()
+    for (const name of ['Square root', '9', 'Exponentiation', '2', 'Percent']) {
+      await user.click(screen.getByRole('button', { name }))
+    }
+
+    expect(input).toHaveValue('√9^2%')
+  })
+
   it('builds an expression with the keypad', async () => {
     let body: unknown
     mockResult(56, (received) => {

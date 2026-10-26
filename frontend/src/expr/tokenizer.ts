@@ -1,12 +1,14 @@
 import { ParseError } from './errors'
 
-export type Operator = '+' | '-' | '*' | '/'
+export type Operator = '+' | '-' | '*' | '/' | '^'
 
 export type Token =
   | { type: 'number'; value: number; position: number }
   | { type: 'operator'; value: Operator; position: number }
   | { type: 'lparen'; position: number }
   | { type: 'rparen'; position: number }
+  | { type: 'percent'; position: number }
+  | { type: 'sqrt'; position: number }
   | { type: 'eof'; position: number }
 
 const OPERATORS: Record<string, Operator> = {
@@ -14,6 +16,7 @@ const OPERATORS: Record<string, Operator> = {
   '-': '-',
   '*': '*',
   '/': '/',
+  '^': '^',
   // Accept the symbols the keypad displays, in case they are typed directly.
   '−': '-',
   '×': '*',
@@ -40,6 +43,18 @@ export function tokenize(input: string): Token[] {
 
     if (char === ')') {
       tokens.push({ type: 'rparen', position: index })
+      index += 1
+      continue
+    }
+
+    if (char === '%') {
+      tokens.push({ type: 'percent', position: index })
+      index += 1
+      continue
+    }
+
+    if (char === '√') {
+      tokens.push({ type: 'sqrt', position: index })
       index += 1
       continue
     }

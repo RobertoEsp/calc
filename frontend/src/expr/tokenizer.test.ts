@@ -31,6 +31,19 @@ describe('tokenize', () => {
     expect(tokens[2]).toEqual({ type: 'number', value: 0.015, position: 5 })
   })
 
+  it('reads powers, square roots, and percentages', () => {
+    expect(tokenize('2^3 + √9%')).toEqual([
+      { type: 'number', value: 2, position: 0 },
+      { type: 'operator', value: '^', position: 1 },
+      { type: 'number', value: 3, position: 2 },
+      { type: 'operator', value: '+', position: 4 },
+      { type: 'sqrt', position: 6 },
+      { type: 'number', value: 9, position: 7 },
+      { type: 'percent', position: 8 },
+      { type: 'eof', position: 9 },
+    ])
+  })
+
   it('tracks parentheses', () => {
     expect(tokenize('(1)')).toEqual([
       { type: 'lparen', position: 0 },

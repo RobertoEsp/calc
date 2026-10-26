@@ -52,7 +52,13 @@ func validate(root *Node) error {
 			case operand.Value != nil && operand.Node != nil:
 				return errorf(CodeInvalidOperand, childPath, "operand cannot be both a number and an expression")
 			case operand.Value != nil && operand.Value.Percent:
-				return errorf(CodeInvalidPercentUsage, childPath, "percentage operands are not supported for %q yet", node.Operation)
+				if !def.allowsPercent(i) {
+					return errorf(
+						CodeInvalidPercentUsage,
+						childPath,
+						"percentage is only allowed as the right operand of add, subtract, multiply, or divide",
+					)
+				}
 			case operand.Node != nil:
 				if err := walk(operand.Node, depth+1, childPath); err != nil {
 					return err
@@ -80,12 +86,20 @@ func evaluate(node *Node, path string) (float64, error) {
 		values[i] = operand.Value.Number
 	}
 
-	result, err := def.apply(values[0], values[1])
+	if len(node.Operands) == 2 && node.Operands[1].Value != nil && node.Operands[1].Value.Percent {
+		applyPercent(node.Operation, values)
+	}
+
+	result, err := def.apply(values)
 	if err != nil {
-		if errors.Is(err, errDivisionByZero) {
+		switch {
+		case errors.Is(err, errDivisionByZero):
 			return 0, errorf(CodeDivisionByZero, path, "cannot divide by zero")
+		case errors.Is(err, errNegativeSqrt):
+			return 0, errorf(CodeNegativeSqrt, path, "cannot take the square root of a negative number")
+		default:
+			return 0, errorf(CodeInvalidOperation, path, "operation %q failed", node.Operation)
 		}
-		return 0, errorf(CodeInvalidOperation, path, "operation %q failed", node.Operation)
 	}
 	if math.IsNaN(result) || math.IsInf(result, 0) {
 		return 0, errorf(CodeNonFiniteResult, path, "result is not a finite number")

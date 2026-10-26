@@ -5,6 +5,8 @@ export type Expr =
   | { kind: 'number'; value: number }
   | { kind: 'binary'; operator: Operator; left: Expr; right: Expr }
   | { kind: 'unary'; operator: '+' | '-'; operand: Expr }
+  | { kind: 'sqrt'; operand: Expr }
+  | { kind: 'percent'; operand: Expr }
 
 export function parse(input: string): Expr {
   const parser = new Parser(tokenize(input))
@@ -35,25 +37,44 @@ class Parser {
   }
 
   private parseTerm(): Expr {
-    let left = this.parseFactor()
+    let left = this.parseUnary()
     while (true) {
       const token = this.current()
       if (token.type === 'operator' && (token.value === '*' || token.value === '/')) {
         this.index += 1
-        left = { kind: 'binary', operator: token.value, left, right: this.parseFactor() }
+        left = { kind: 'binary', operator: token.value, left, right: this.parseUnary() }
         continue
       }
       return left
     }
   }
 
-  private parseFactor(): Expr {
+  private parseUnary(): Expr {
     const token = this.current()
     if (token.type === 'operator' && (token.value === '+' || token.value === '-')) {
       this.index += 1
-      return { kind: 'unary', operator: token.value, operand: this.parseFactor() }
+      return { kind: 'unary', operator: token.value, operand: this.parseUnary() }
     }
-    return this.parsePrimary()
+    return this.parsePower()
+  }
+
+  private parsePower(): Expr {
+    const base = this.parsePostfix()
+    const token = this.current()
+    if (token.type === 'operator' && token.value === '^') {
+      this.index += 1
+      return { kind: 'binary', operator: '^', left: base, right: this.parseUnary() }
+    }
+    return base
+  }
+
+  private parsePostfix(): Expr {
+    let expression = this.parsePrimary()
+    while (this.current().type === 'percent') {
+      this.index += 1
+      expression = { kind: 'percent', operand: expression }
+    }
+    return expression
   }
 
   private parsePrimary(): Expr {
@@ -62,6 +83,11 @@ class Parser {
     if (token.type === 'number') {
       this.index += 1
       return { kind: 'number', value: token.value }
+    }
+
+    if (token.type === 'sqrt') {
+      this.index += 1
+      return { kind: 'sqrt', operand: this.parseUnary() }
     }
 
     if (token.type === 'lparen') {
@@ -110,6 +136,10 @@ function describe(token: Token): string {
       return '"("'
     case 'rparen':
       return '")"'
+    case 'percent':
+      return '"%"'
+    case 'sqrt':
+      return '"√"'
     case 'eof':
       return 'the end of the expression'
   }

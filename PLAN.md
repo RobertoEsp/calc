@@ -1,7 +1,7 @@
 # MVP Calc — Implementation Plan
 
-Status: **in progress** — Phase 0 (skeleton), Phase 1 (backend, basic operations), and Phase 2
-(frontend, basic operations) complete as of 2026-10-26.
+Status: **in progress** — Phase 0 (skeleton), Phase 1 (backend, basic operations), Phase 2
+(frontend, basic operations), and Phase 3 (optional operations) complete as of 2026-10-26.
 
 Source requirements: `requirements.md`
 
@@ -213,9 +213,14 @@ keypad entry `7×8 = 56`, the `1/0` error message, and 390px/1280px layouts with
 2. Frontend
    - Grammar/UI for `^`, `√`, `%`; keypad buttons; serializer support for percent operands.
    - Tests for new tokens, operator precedence with `^` (right-associative), percent serialization, error rendering.
-3. `README` operation table updated.
+3. `README` operation table updated (deferred to Phase 4, when the README is written).
 
-Done when: both suites are green and every operation is exercisable from the UI.
+Done when: both suites are green and every operation is exercisable from the UI. ✅
+82 frontend tests pass across 6 files; Go tests pass with 93.5% coverage in `internal/api` and
+98.7% in `internal/calculator` (87.6% total). Lint, `go vet`, and the production build are clean;
+frontend coverage is 96.4% statements / 97.6% lines. A headless-Chrome smoke test through the Vite
+proxy verified `2^10 = 1024`, `√81 = 9`, `200+10% = 220`, `25% = 0.25`, the `negative_sqrt` error,
+keypad entry of powers and percentages, and a 390px layout with no overflow.
 
 ### Phase 4 — Packaging & documentation
 
