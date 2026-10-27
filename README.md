@@ -96,7 +96,8 @@ Current results (2026-10-27):
   `internal/web`; **86.1%** total.
 - `go vet`, `gofmt`, oxlint, and the production build are clean.
 
-`make cover` writes `backend/coverage.out` and an HTML report under `frontend/coverage/`.
+`make cover` writes `backend/coverage.out` and an HTML report under `frontend/coverage/`. A
+checked-in snapshot with the package-level breakdown is in [COVERAGE.md](COVERAGE.md).
 
 Release verification on 2026-10-27 built and ran the container, curl-checked every client-reachable
 error code and all operations, and exercised a keyboard-only browser flow at 1280px and 390px. The

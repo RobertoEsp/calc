@@ -145,7 +145,8 @@ calc/
 ├── .dockerignore
 ├── Makefile
 ├── .gitignore
-└── README.md
+├── README.md
+└── COVERAGE.md
 ```
 
 ---
@@ -261,7 +262,8 @@ and the browser checks pass. ✅
 Final verification (2026-10-27):
 
 - `make cover`: frontend **82 tests**, **96.4% statements / 97.6% lines / 100% functions**; Go
-  **93.5%** API, **98.7%** calculator, **92.9%** web, **86.1%** total. `make lint` is clean.
+  **93.5%** API, **98.7%** calculator, **92.9%** web, **86.1%** total. `make lint` is clean. The
+  checked-in snapshot is `COVERAGE.md`.
 - `docker build` succeeded and a fresh container ran on `:8082` with a healthy healthcheck and UID
   10001. `/healthz`, `/`, history fallback, hashed assets, and all operations behaved as expected.
 - Curl checks returned the expected status and code for `invalid_json` (400), `request_too_large`

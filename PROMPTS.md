@@ -113,3 +113,16 @@ Implementation notes:
   widths, with no horizontal overflow.
 - Documented that `invalid_expression` and `invalid_operand` are evaluator guards rather than
   decoder-reachable API errors.
+
+## 13. Add coverage report
+
+> yes
+
+Context: follow-up to the requirements audit; accepted the proposal to add a checked-in coverage
+report and remove leftover `.gitkeep` files.
+
+Implementation notes:
+
+- Added `COVERAGE.md` with reproduction commands, summary metrics, backend package breakdown, and
+  frontend file breakdown; linked it from the README.
+- Removed the three obsolete `.gitkeep` files from backend packages that now contain source files.
